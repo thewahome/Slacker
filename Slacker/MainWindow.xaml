@@ -3,7 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 		xmlns:cefwpf="clr-namespace:CefSharp.Wpf;assembly=CefSharp.Wpf"
         Title="Slacker" Height="350" Width="525"
-		WindowState="Maximized">
+		WindowState="Maximized"
+		Icon="/Resources/Slack.ico">
     <Grid>
 		<cefwpf:ChromiumWebBrowser Address="https://kt280.slack.com"  />
 	</Grid>

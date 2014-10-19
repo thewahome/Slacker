@@ -55,3 +55,4 @@ D:\Projects\Slacker\Slacker\obj\x64\Debug\Slacker.pdb
 \\psf\Dropbox\Slacker\Slacker\bin\x64\Debug\PortableRest.xml
 \\psf\Dropbox\Slacker\Slacker\bin\x64\Debug\System.Net.Http.Extensions.xml
 \\psf\Dropbox\Slacker\Slacker\bin\x64\Debug\System.Net.Http.Primitives.xml
+\\psf\Dropbox\Slacker\Slacker\obj\x64\Debug\Slacker.csprojResolveAssemblyReference.cache

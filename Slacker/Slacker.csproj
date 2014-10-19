@@ -155,9 +155,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Red.ico" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\Slack.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>

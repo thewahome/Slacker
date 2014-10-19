@@ -20,7 +20,7 @@ namespace Slacker.Models
 			set;
 		}
 
-		public int UnreadCount
+		public bool HasUnread
 		{
 			get;
 			set;
