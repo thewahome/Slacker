@@ -1,0 +1,12 @@
+D:\Projects\Slacker\Slacker\bin\Debug\Slacker.exe.config
+D:\Projects\Slacker\Slacker\bin\Debug\Slacker.exe
+D:\Projects\Slacker\Slacker\bin\Debug\Slacker.pdb
+D:\Projects\Slacker\Slacker\obj\Debug\MainWindow.baml
+D:\Projects\Slacker\Slacker\obj\Debug\MainWindow.g.cs
+D:\Projects\Slacker\Slacker\obj\Debug\App.g.cs
+D:\Projects\Slacker\Slacker\obj\Debug\Slacker_MarkupCompile.cache
+D:\Projects\Slacker\Slacker\obj\Debug\Slacker.g.resources
+D:\Projects\Slacker\Slacker\obj\Debug\Slacker.Properties.Resources.resources
+D:\Projects\Slacker\Slacker\obj\Debug\Slacker.csproj.GenerateResource.Cache
+D:\Projects\Slacker\Slacker\obj\Debug\Slacker.exe
+D:\Projects\Slacker\Slacker\obj\Debug\Slacker.pdb
