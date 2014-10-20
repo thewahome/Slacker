@@ -15,6 +15,8 @@ using System.Windows.Media.Imaging;
 using Hardcodet.Wpf.TaskbarNotification;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Slacker.Config;
+using Slacker.Core;
 using Slacker.Models;
 
 namespace Slacker
@@ -50,104 +52,84 @@ namespace Slacker
 			this.NotifyIcon = (TaskbarIcon)FindResource("NotifyIcon");
 			this.Teams = new ObservableCollection<Team>();
 
-			this.Teams.Add(new Team() { Token = "xoxp-2421999892-2421999894-2719715292-6d0a71" });
+			this.Initial();
+		}
 
-			Team team = this.Teams[0];
+		public void Initial()
+		{
+			this.Teams.Clear();
 
-			JObject channelListResponse = GetFromSlackAPI<JObject>(team,
-																   "channels.list");
-
-			if (channelListResponse != null && channelListResponse["channels"] != null)
+			foreach (TeamConfigElement teamConfig in Globals.Settings.Teams)
 			{
-				foreach (JToken responsedChannel in channelListResponse["channels"])
-				{
-					if (responsedChannel["is_member"].Value<bool>() == false)
-						continue;
+				Team team = new Team() 
+				{ 
+					Name = teamConfig.Name, 
+					Token = teamConfig.Token 
+				};
 
-					team.Channels.Add(new Channel()
+				JObject channelListResponse = SlackApiClient.GetFromSlackAPI<JObject>(team.Token,
+																					  "channels.list");
+
+				if (channelListResponse != null && channelListResponse["channels"] != null)
+				{
+					foreach (JToken responsedChannel in channelListResponse["channels"])
 					{
-						ID = responsedChannel["id"].Value<string>(),
-						Name = responsedChannel["name"].Value<string>()
-					});
+						if (responsedChannel["is_member"].Value<bool>() == false)
+							continue;
+
+						team.Channels.Add(new Channel()
+						{
+							ID = responsedChannel["id"].Value<string>(),
+							Name = responsedChannel["name"].Value<string>()
+						});
+					}
 				}
+
+				this.Teams.Add(team);
 			}
 
 			Timer timer = new Timer(10000);
 			timer.Elapsed += (sender, args) =>
 			{
-				foreach (Channel channel in team.Channels)
+				foreach (Team team in this.Teams)
 				{
-					JObject channelResponse = GetFromSlackAPI<JObject>(team,
-																	   "channels.info",
-																	   string.Format("channel={0}", channel.ID));
-
-					if (channelResponse != null && 
-						channelResponse["channel"] != null)
+					foreach (Channel channel in team.Channels)
 					{
-						if (channelResponse["channel"]["unread_count_visible"] != null)
-							channel.HasUnread = channelResponse["channel"]["unread_count_visible"].Value<int>() > 0;
-						else if (channelResponse["channel"]["unread_count"] != null)
-							channel.HasUnread = channelResponse["channel"]["unread_count"].Value<int>() > 0;
-						else
-							channel.HasUnread = false;
+						JObject channelResponse = SlackApiClient.GetFromSlackAPI<JObject>(team.Token,
+																						   "channels.info",
+																						   string.Format("channel={0}", channel.ID));
+
+						if (channelResponse != null &&
+							channelResponse["channel"] != null)
+						{
+							if (channelResponse["channel"]["unread_count_visible"] != null)
+								channel.HasUnread = channelResponse["channel"]["unread_count_visible"].Value<int>() > 0;
+							else if (channelResponse["channel"]["unread_count"] != null)
+								channel.HasUnread = channelResponse["channel"]["unread_count"].Value<int>() > 0;
+							else
+								channel.HasUnread = false;
+						}
 					}
+
+					Dispatcher.BeginInvoke(new Action(() =>
+					{
+						if (team.Channels.Where(c => c.HasUnread).Any())
+						{
+							string message = string.Format("{0} 以下頻道中有新訊息喔:", team.Name);
+
+							foreach (Channel channel in team.Channels.Where(c => c.HasUnread))
+								message += "\n" + channel.Name;
+
+							this.NotifyIcon.ShowBalloonTip("Slacker", message, BalloonIcon.Info);
+						}
+					}));
+
 				}
-
-				Dispatcher.BeginInvoke(new Action(() => 
-				{ 
-					if (team.Channels.Where(c => c.HasUnread).Any() &&
-						App.Current.MainWindow.IsFocused == false)
-					{
-						string message = "以下頻道中有新訊息喔:";
-
-						foreach (Channel channel in team.Channels.Where(c => c.HasUnread))
-							message += "\n" + channel.Name;
-
-						this.NotifyIcon.ShowBalloonTip("Slacker", message, BalloonIcon.Info);
-					}
-				}));
 
 			};
 
 			timer.Start();
-
 		}
 
-
-		private T GetFromSlackAPI<T>(Team team,
-									 string urlWithoutBaseUrl,
-									 params string[] parameters)
-		{
-			T result = default(T);
-
-			try
-			{
-				HttpClient client = new HttpClient();
-				client.BaseAddress = new Uri("https://slack.com/api/");
-				client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-				string url = urlWithoutBaseUrl + string.Format("?token={0}", team.Token);
-
-				foreach (string parameter in parameters)
-					url += "&" + parameter;
-
-				string rawResponseContent = client.GetAsync(url,
-															HttpCompletionOption.ResponseContentRead)
-												  .Result
-												  .Content
-												  .ReadAsStringAsync()
-												  .Result;
-
-				JsonSerializerSettings settings = new JsonSerializerSettings();
-				settings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-				result = JsonConvert.DeserializeObject<T>(rawResponseContent);
-			}
-			catch(Exception ex)
-			{
-				Debug.WriteLine(ex.Message + ex.StackTrace);
-			}
-
-			return result;
-		}
 	}
 }

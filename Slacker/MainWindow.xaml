@@ -6,6 +6,6 @@
 		WindowState="Maximized"
 		Icon="/Resources/Slack.ico">
     <Grid>
-		<cefwpf:ChromiumWebBrowser Address="https://kt280.slack.com"  />
+		<cefwpf:ChromiumWebBrowser Address="https://kt000.slack.com"   />
 	</Grid>
 </Window>

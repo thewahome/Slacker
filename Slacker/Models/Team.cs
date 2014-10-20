@@ -11,6 +11,12 @@ namespace Slacker.Models
 	/// </summary>
 	class Team
 	{
+		public string Name
+		{
+			get;
+			set;
+		}
+
 		/// <summary>
 		/// Gets or sets the token.
 		/// </summary>
@@ -29,6 +35,14 @@ namespace Slacker.Models
 		public Team()
 		{
 			this.Channels = new List<Channel>();
+		}
+
+		public override string ToString()
+		{
+			return string.Format("Team Name:{0}, Token:{1}, Channels:{2}",
+								 this.Name,
+								 this.Token,
+								 this.Channels.Count);
 		}
 	}
 }
