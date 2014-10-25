@@ -3,4 +3,5 @@ debug
 *.suo
 obj
 packages
+publish
 *.user
