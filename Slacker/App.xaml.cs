@@ -11,6 +11,8 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using Hardcodet.Wpf.TaskbarNotification;
 using Newtonsoft.Json;
@@ -26,47 +28,76 @@ namespace Slacker
 	/// </summary>
 	public partial class App : System.Windows.Application
 	{
+		#region Properties
 
-		/// <summary>
-		/// Gets the notify icon on Windows bar.
-		/// </summary>
 		internal TaskbarIcon NotifyIcon
 		{
 			get;
 			private set;
 		}
 
-		/// <summary>
-		/// Gets the teams.
-		/// </summary>
+		internal Timer SyncTimer
+		{
+			get;
+			private set;
+		}
+
 		internal ObservableCollection<Team> Teams
 		{
 			get;
 			private set;
 		}
 
+		#endregion
+
+		#region Constructors
+
+		protected App()
+		{
+			this.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+			this.Teams = new ObservableCollection<Team>();
+		}
+
+		#endregion
+
+		#region Methods
+
 		protected override void OnStartup(StartupEventArgs e)
 		{
 			base.OnStartup(e);
 
-			this.NotifyIcon = (TaskbarIcon)FindResource("NotifyIcon");
-			this.Teams = new ObservableCollection<Team>();
-
-			this.Initial();
+			this.InitialCommands();
+			this.InitialTeams();
+			this.InitialSync();
+			this.InitialNotifyIcon();
 		}
 
-		public void Initial()
+		public void InitialTeams()
 		{
+			if (this.SyncTimer != null)
+				this.SyncTimer.Stop();
+
 			this.Teams.Clear();
 
 			foreach (TeamConfigElement teamConfig in Globals.Settings.Teams)
 			{
-				Team team = new Team() 
-				{ 
-					Name = teamConfig.Name, 
-					Token = teamConfig.Token 
+				Team team = new Team()
+				{
+					Name = teamConfig.Name,
+					Token = teamConfig.Token
 				};
 
+				this.Teams.Add(team);
+			}
+		}
+
+		public void InitialSync()
+		{
+			if (this.SyncTimer != null)
+				this.SyncTimer.Stop();
+
+			foreach (Team team in this.Teams)
+			{
 				JObject channelListResponse = SlackApiClient.GetFromSlackAPI<JObject>(team.Token,
 																					  "channels.list");
 
@@ -84,52 +115,116 @@ namespace Slacker
 						});
 					}
 				}
-
-				this.Teams.Add(team);
 			}
 
-			Timer timer = new Timer(10000);
-			timer.Elapsed += (sender, args) =>
+			if (this.SyncTimer != null)
 			{
-				foreach (Team team in this.Teams)
+				this.SyncTimer.Stop();
+				this.SyncTimer = null;
+			}
+
+			this.SyncTimer = new Timer(Globals.Settings.CheckInterval * 1000);
+			this.SyncTimer.Elapsed += (sender, args) =>
+			{
+				try
 				{
-					foreach (Channel channel in team.Channels)
+					foreach (Team team in this.Teams)
 					{
-						JObject channelResponse = SlackApiClient.GetFromSlackAPI<JObject>(team.Token,
-																						   "channels.info",
-																						   string.Format("channel={0}", channel.ID));
-
-						if (channelResponse != null &&
-							channelResponse["channel"] != null)
+						foreach (Channel channel in team.Channels)
 						{
-							if (channelResponse["channel"]["unread_count_visible"] != null)
-								channel.HasUnread = channelResponse["channel"]["unread_count_visible"].Value<int>() > 0;
-							else if (channelResponse["channel"]["unread_count"] != null)
-								channel.HasUnread = channelResponse["channel"]["unread_count"].Value<int>() > 0;
-							else
-								channel.HasUnread = false;
+							JObject channelResponse = SlackApiClient.GetFromSlackAPI<JObject>(team.Token,
+																							   "channels.info",
+																							   string.Format("channel={0}", channel.ID));
+
+							if (channelResponse != null &&
+								channelResponse["channel"] != null)
+							{
+								if (channelResponse["channel"]["unread_count_visible"] != null)
+									channel.HasUnread = channelResponse["channel"]["unread_count_visible"].Value<int>() > 0;
+								else if (channelResponse["channel"]["unread_count"] != null)
+									channel.HasUnread = channelResponse["channel"]["unread_count"].Value<int>() > 0;
+								else
+									channel.HasUnread = false;
+							}
 						}
+
+						Dispatcher.BeginInvoke(new Action(() =>
+						{
+							if (team.Channels.Where(c => c.HasUnread).Any())
+							{
+								string message = string.Format("{0} 以下頻道中有新訊息喔:", team.Name);
+
+								foreach (Channel channel in team.Channels.Where(c => c.HasUnread))
+									message += "\n" + channel.Name;
+
+								this.NotifyIcon.ShowBalloonTip("Slacker", message, BalloonIcon.Info);
+							}
+						}));
+
 					}
-
-					Dispatcher.BeginInvoke(new Action(() =>
-					{
-						if (team.Channels.Where(c => c.HasUnread).Any())
-						{
-							string message = string.Format("{0} 以下頻道中有新訊息喔:", team.Name);
-
-							foreach (Channel channel in team.Channels.Where(c => c.HasUnread))
-								message += "\n" + channel.Name;
-
-							this.NotifyIcon.ShowBalloonTip("Slacker", message, BalloonIcon.Info);
-						}
-					}));
-
 				}
-
+				catch (Exception ex)
+				{
+				}
 			};
 
-			timer.Start();
+			this.SyncTimer.Start();
 		}
+
+		private void InitialNotifyIcon()
+		{
+			this.NotifyIcon = (TaskbarIcon)FindResource("NotifyIcon");
+
+			MenuItem rootTeamMenuItem = this.NotifyIcon.ContextMenu.Items[0] as MenuItem;
+
+			rootTeamMenuItem.Items.Clear();
+
+			foreach (Team team in this.Teams)
+			{
+				rootTeamMenuItem.Items.Add(new MenuItem() { Header = team.Name });
+			}
+		}
+
+		private void InitialCommands()
+		{
+			// Exist
+			Commands.Exit.ExecuteAction = new Action<object>((parameter) =>
+			{
+				this.Shutdown();
+			});
+
+			// Edit Setting
+			Commands.EditSetting.ExecuteAction = new Action<object>((parameter) =>
+			{
+				SettingWindow window = new SettingWindow()
+				{
+					DataContext = Globals.Settings
+				};
+
+				window.ShowDialog();
+			});
+
+			// Save Setting
+			Commands.SaveSetting.ExecuteAction = new Action<object>((parameter) =>
+			{
+				if (this.SyncTimer != null)
+					this.SyncTimer.Stop();
+
+				Globals.Settings.Save();
+
+				var settingWindows = this.Windows.Cast<SettingWindow>();
+
+				for (int i = settingWindows.Count(); i > 0; i--)
+					settingWindows.ElementAt(i-1).Close();
+
+				this.InitialTeams();
+				this.InitialNotifyIcon();
+				this.InitialSync();
+			});
+
+		}
+
+		#endregion
 
 	}
 }

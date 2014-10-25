@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,23 +27,30 @@ namespace Slacker.Models
 			set;
 		}
 
-		public List<Channel> Channels
+		public ObservableCollection<Channel> Channels
 		{
 			get;
 			private set;
 		}
 
+		public string LatestTimestamp
+		{
+			get;
+			set;
+		}
+
 		public Team()
 		{
-			this.Channels = new List<Channel>();
+			this.Channels = new ObservableCollection<Channel>();
 		}
 
 		public override string ToString()
 		{
-			return string.Format("Team Name:{0}, Token:{1}, Channels:{2}",
+			return string.Format("Team Name:{0}, Token:{1}, Channels:{2}, LatestTimestamp:{3}",
 								 this.Name,
 								 this.Token,
-								 this.Channels.Count);
+								 this.Channels.Count,
+								 this.LatestTimestamp);
 		}
 	}
 }

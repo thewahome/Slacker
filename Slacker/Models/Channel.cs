@@ -25,5 +25,11 @@ namespace Slacker.Models
 			get;
 			set;
 		}
+
+		public string LatestTimestamp
+		{
+			get;
+			set;
+		}
 	}
 }

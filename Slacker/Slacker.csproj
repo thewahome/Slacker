@@ -112,11 +112,19 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Commands.cs" />
     <Compile Include="Config\SlackerConfigSection.cs" />
     <Compile Include="Config\TeamConfigElement.cs" />
     <Compile Include="Config\TeamConfigElementCollection.cs" />
     <Compile Include="Core\SlackApiClient.cs" />
+    <Compile Include="SettingWindow.xaml.cs">
+      <DependentUpon>SettingWindow.xaml</DependentUpon>
+    </Compile>
     <Page Include="Resources\NotifyIcon.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SettingWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

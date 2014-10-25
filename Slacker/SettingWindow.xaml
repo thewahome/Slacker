@@ -1,0 +1,38 @@
+﻿<Window x:Class="Slacker.SettingWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:local="clr-namespace:Slacker"
+        Title="Settings" Height="300" Width="500"
+		Icon="/Resources/Slack.ico">
+	<DockPanel>
+		<StackPanel DockPanel.Dock="Bottom"
+					Orientation="Horizontal"
+					HorizontalAlignment="Right"
+					>
+			<Button IsDefault="true"
+					Command="local:Commands.SaveSetting">Save</Button>
+			<Button IsCancel="True">Cancel</Button>
+		</StackPanel>
+		<Grid>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="32px" />
+				<RowDefinition Height="*" />
+			</Grid.RowDefinitions>
+			<StackPanel Grid.Row="0" Orientation="Horizontal">
+				<Label>Check Interval:</Label>
+				<TextBox Text="{Binding CheckInterval}"
+					 Width="100"
+					 TextAlignment="Right"/>
+				<Label>Minutes</Label>
+			</StackPanel>
+			<DataGrid Grid.Row="1"
+				  ItemsSource="{Binding Teams.View}" 
+				  AutoGenerateColumns="False">
+				<DataGrid.Columns>
+					<DataGridTextColumn Header="Team Name" Binding="{Binding Name, Mode=TwoWay}" />
+					<DataGridTextColumn Header="Token" Binding="{Binding Token, Mode=TwoWay}" />
+				</DataGrid.Columns>
+			</DataGrid>
+		</Grid>
+	</DockPanel>
+</Window>

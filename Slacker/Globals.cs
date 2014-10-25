@@ -10,6 +10,12 @@ namespace Slacker
 {
 	internal  class Globals
 	{
-		internal static SlackerConfigSection Settings = ConfigurationManager.GetSection("slacker") as SlackerConfigSection ?? new SlackerConfigSection();
+		static Globals()
+		{
+			Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+			Settings = config.Sections["slacker"] as SlackerConfigSection ?? new SlackerConfigSection();
+		}
+
+		internal static SlackerConfigSection Settings;
 	}
 }
