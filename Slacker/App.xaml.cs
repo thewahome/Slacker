@@ -111,7 +111,43 @@ namespace Slacker
 						team.Channels.Add(new Channel()
 						{
 							ID = responsedChannel["id"].Value<string>(),
-							Name = responsedChannel["name"].Value<string>()
+							Name = responsedChannel["name"].Value<string>(),
+							LatestTimestamp = team.LatestTimestamp
+						});
+					}
+				}
+
+				JObject groupListResponse = SlackApiClient.GetFromSlackAPI<JObject>(team.Token,
+																					  "groups.list");
+
+				if (groupListResponse != null && groupListResponse["groups"] != null)
+				{
+					foreach (JToken responsedGroup in groupListResponse["groups"])
+					{
+						if (responsedGroup["is_archived"].Value<bool>() == true)
+							continue;
+
+						team.Groups.Add(new Group()
+						{
+							ID = responsedGroup["id"].Value<string>(),
+							Name = responsedGroup["name"].Value<string>(),
+							LatestTimestamp = team.LatestTimestamp
+						});
+					}
+				}
+
+				JObject chatListResponse = SlackApiClient.GetFromSlackAPI<JObject>(team.Token,
+																					  "im.list");
+
+				if (chatListResponse != null && chatListResponse["ims"] != null)
+				{
+					foreach (JToken responsedChat in chatListResponse["ims"])
+					{
+						team.Chats.Add(new Chat()
+						{
+							ID = responsedChat["id"].Value<string>(),
+							Name = responsedChat["user"].Value<string>(),
+							LatestTimestamp = team.LatestTimestamp
 						});
 					}
 				}
@@ -148,20 +184,84 @@ namespace Slacker
 							}
 						}
 
-						Dispatcher.BeginInvoke(new Action(() =>
+						foreach (Group group in team.Groups)
+						{
+							JObject groupResponse = SlackApiClient.GetFromSlackAPI<JObject>(team.Token,
+																							   "groups.history",
+																							   string.Format("channel={0}", group.ID));
+
+
+							if (groupResponse != null &&
+								groupResponse["messages"] != null)
+							{
+								string latest = groupResponse["messages"].Max(r => r["ts"].Value<string>());
+
+								if (group.HasUnread == false &&
+									group.LatestTimestamp != latest)
+								{
+									group.LatestTimestamp = latest;
+									group.HasUnread = true;
+								}
+							}
+						}
+
+						foreach (Chat chat in team.Chats)
+						{
+							JObject chatResponse = SlackApiClient.GetFromSlackAPI<JObject>(team.Token,
+																							   "im.history",
+																							   string.Format("channel={0}", chat.ID));
+
+
+							if (chatResponse != null &&
+								chatResponse["messages"] != null)
+							{
+								string latest = chatResponse["messages"].Max(r => r["ts"].Value<string>());
+
+								if (chat.HasUnread == false &&
+									chat.LatestTimestamp != latest)
+								{
+									chat.LatestTimestamp = latest;
+									chat.HasUnread = true;
+								}
+							}
+						}
+
+
+					}
+					Dispatcher.BeginInvoke(new Action(() =>
+					{
+						string message = string.Empty;
+
+						foreach (Team team in this.Teams)
 						{
 							if (team.Channels.Where(c => c.HasUnread).Any())
 							{
-								string message = string.Format("{0} 以下頻道中有新訊息喔:", team.Name);
+								message += string.Format("{0} 以下頻道中有新訊息喔:\n", team.Name);
 
 								foreach (Channel channel in team.Channels.Where(c => c.HasUnread))
-									message += "\n" + channel.Name;
-
-								this.NotifyIcon.ShowBalloonTip("Slacker", message, BalloonIcon.Info);
+									message += channel.Name + "\n";
 							}
-						}));
 
-					}
+							if (team.Groups.Where(c => c.HasUnread).Any())
+							{
+								message += string.Format("{0} 以下群組中有新訊息喔:\n", team.Name);
+
+								foreach (Group group in team.Groups.Where(c => c.HasUnread))
+									message += group.Name + "\n";
+							}
+
+							if (team.Chats.Where(c => c.HasUnread).Any())
+							{
+								message += string.Format("{0} 以下對話中有新訊息喔:\n", team.Name);
+
+								foreach (Chat chat in team.Chats.Where(c => c.HasUnread))
+									message += chat.Name + "\n";
+							}
+						}
+
+						if (message.Length > 0)
+							this.NotifyIcon.ShowBalloonTip("Slacker", message, BalloonIcon.Info);
+					}));
 				}
 				catch (Exception ex)
 				{
@@ -178,12 +278,6 @@ namespace Slacker
 			MenuItem rootTeamMenuItem = this.NotifyIcon.ContextMenu.Items[0] as MenuItem;
 
 			rootTeamMenuItem.ItemsSource = this.Teams;
-			//rootTeamMenuItem.Items.Clear();
-
-			//foreach (Team team in this.Teams)
-			//{
-			//	rootTeamMenuItem.Items.Add(new MenuItem() { Header = team.Name });
-			//}
 		}
 
 		private void InitialCommands()
@@ -216,7 +310,7 @@ namespace Slacker
 				var settingWindows = this.Windows.Cast<SettingWindow>();
 
 				for (int i = settingWindows.Count(); i > 0; i--)
-					settingWindows.ElementAt(i-1).Close();
+					settingWindows.ElementAt(i - 1).Close();
 
 				this.InitialTeams();
 				//this.InitialNotifyIcon();
@@ -225,9 +319,16 @@ namespace Slacker
 
 			// Open Team
 			Commands.OpenTeam.ExecuteAction = new Action<object>((parameter) =>
-			{ 
+			{
 				string teamName = parameter as string;
 				Process.Start(string.Format("http://{0}.slack.com/", teamName));
+
+				Team team = this.Teams.Single(t => t.Name == teamName);
+
+				team.MarkRead();
+
+				Globals.Settings.Teams[team.Name].Latest = team.LatestTimestamp;
+				Globals.Settings.Save();
 			});
 
 		}

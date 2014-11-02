@@ -27,7 +27,7 @@ namespace Slacker.Config
 		/// </summary>
 		[ConfigurationProperty("checkInterval",
 							   IsRequired = false,
-							   DefaultValue = 1)]
+							   DefaultValue = 3)]
 		public int CheckInterval
 		{
 			get { return (int)base["checkInterval"]; }

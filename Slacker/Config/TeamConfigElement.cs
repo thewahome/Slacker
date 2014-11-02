@@ -26,5 +26,13 @@ namespace Slacker.Config
 			get { return base["token"] as string; }
 			set { base["token"] = value; }
 		}
+
+		[ConfigurationProperty("latest",
+							   IsRequired = false)]
+		public string Latest
+		{
+			get { return base["latest"] as string; }
+			set { base["latest"] = value; }
+		}
 	}
 }

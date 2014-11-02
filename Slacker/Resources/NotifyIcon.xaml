@@ -27,4 +27,5 @@
 			</ContextMenu>
 		</tb:TaskbarIcon.ContextMenu>
 	</tb:TaskbarIcon>
+
 </ResourceDictionary>

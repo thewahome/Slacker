@@ -18,6 +18,11 @@ namespace Slacker.Config
 			get { return this.BaseGet(i) as TeamConfigElement; }
 		}
 
+		public TeamConfigElement this[string name]
+		{
+			get { return this.BaseGet(name) as TeamConfigElement; }
+		}
+
 		public override ConfigurationElementCollectionType CollectionType
 		{
 			get

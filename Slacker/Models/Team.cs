@@ -58,6 +58,20 @@ namespace Slacker.Models
 			this.Chats = new ObservableCollection<Chat>();
 		}
 
+		public void MarkRead()
+		{
+
+
+			foreach (Channel channel in this.Channels)
+				channel.HasUnread = false;
+
+			foreach (Group group in this.Groups)
+				group.HasUnread = false;
+
+			foreach (Chat chat in this.Chats)
+				chat.HasUnread = false;
+		}
+
 		public override string ToString()
 		{
 			return string.Format("Team Name:{0}, Token:{1}, Channels:{2}, Groups:{3}, Chats{4}, LatestTimestamp:{5}",
