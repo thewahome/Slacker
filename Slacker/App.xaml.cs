@@ -177,12 +177,13 @@ namespace Slacker
 
 			MenuItem rootTeamMenuItem = this.NotifyIcon.ContextMenu.Items[0] as MenuItem;
 
-			rootTeamMenuItem.Items.Clear();
+			rootTeamMenuItem.ItemsSource = this.Teams;
+			//rootTeamMenuItem.Items.Clear();
 
-			foreach (Team team in this.Teams)
-			{
-				rootTeamMenuItem.Items.Add(new MenuItem() { Header = team.Name });
-			}
+			//foreach (Team team in this.Teams)
+			//{
+			//	rootTeamMenuItem.Items.Add(new MenuItem() { Header = team.Name });
+			//}
 		}
 
 		private void InitialCommands()
@@ -218,8 +219,15 @@ namespace Slacker
 					settingWindows.ElementAt(i-1).Close();
 
 				this.InitialTeams();
-				this.InitialNotifyIcon();
+				//this.InitialNotifyIcon();
 				this.InitialSync();
+			});
+
+			// Open Team
+			Commands.OpenTeam.ExecuteAction = new Action<object>((parameter) =>
+			{ 
+				string teamName = parameter as string;
+				Process.Start(string.Format("http://{0}.slack.com/", teamName));
 			});
 
 		}

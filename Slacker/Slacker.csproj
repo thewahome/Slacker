@@ -149,6 +149,8 @@
     <Compile Include="Config\TeamConfigElement.cs" />
     <Compile Include="Config\TeamConfigElementCollection.cs" />
     <Compile Include="Core\SlackApiClient.cs" />
+    <Compile Include="Models\Group.cs" />
+    <Compile Include="Models\Chat.cs" />
     <Compile Include="SettingWindow.xaml.cs">
       <DependentUpon>SettingWindow.xaml</DependentUpon>
     </Compile>

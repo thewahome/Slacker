@@ -33,6 +33,18 @@ namespace Slacker.Models
 			private set;
 		}
 
+		public ObservableCollection<Group> Groups
+		{
+			get;
+			private set;
+		}
+
+		public ObservableCollection<Chat> Chats
+		{
+			get;
+			private set;
+		}
+
 		public string LatestTimestamp
 		{
 			get;
@@ -42,14 +54,18 @@ namespace Slacker.Models
 		public Team()
 		{
 			this.Channels = new ObservableCollection<Channel>();
+			this.Groups = new ObservableCollection<Group>();
+			this.Chats = new ObservableCollection<Chat>();
 		}
 
 		public override string ToString()
 		{
-			return string.Format("Team Name:{0}, Token:{1}, Channels:{2}, LatestTimestamp:{3}",
+			return string.Format("Team Name:{0}, Token:{1}, Channels:{2}, Groups:{3}, Chats{4}, LatestTimestamp:{5}",
 								 this.Name,
 								 this.Token,
 								 this.Channels.Count,
+								 this.Groups.Count,
+								 this.Chats.Count,
 								 this.LatestTimestamp);
 		}
 	}

@@ -28,6 +28,12 @@ namespace Slacker
 			private set;
 		}
 
+		public static Command OpenTeam
+		{
+			get;
+			private set;
+		}
+
 		#endregion
 
 		#region Constructors
@@ -37,6 +43,7 @@ namespace Slacker
 			Exit = new Command(); 
 			EditSetting = new Command();
 			SaveSetting = new Command();
+			OpenTeam = new Command();
 		}
 
 		#endregion

@@ -6,10 +6,19 @@
 	<tb:TaskbarIcon x:Key="NotifyIcon"
                     IconSource="/Resources/Slack.ico"
                     ToolTipText="Slacker"
+					MenuActivation="All"
                     >
 		<tb:TaskbarIcon.ContextMenu>
 			<ContextMenu>
-				<MenuItem Header="Teams"/>
+				<MenuItem Header="Teams">
+					<MenuItem.ItemContainerStyle>
+						<Style TargetType="MenuItem">
+							<Setter Property="Command" Value="local:Commands.OpenTeam"/>
+							<Setter Property="CommandParameter" Value="{Binding Name}" />
+							<Setter Property="Header"  Value="{Binding Name}" />
+						</Style>
+					</MenuItem.ItemContainerStyle>
+				</MenuItem>
 				<Separator />
 				<MenuItem Header="Setting"
 						  Command="local:Commands.EditSetting" />
