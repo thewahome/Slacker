@@ -26,11 +26,11 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <UpdateUrl>http://wiikuo.github.io/slacker/publish/</UpdateUrl>
-    <MinimumRequiredVersion>0.1.0.0</MinimumRequiredVersion>
+    <UpdateUrl>http://wiikuo.github.io/Slacker/publish/</UpdateUrl>
+    <MinimumRequiredVersion>0.1.5419.26001</MinimumRequiredVersion>
     <AutorunEnabled>true</AutorunEnabled>
-    <ApplicationRevision>39163</ApplicationRevision>
-    <ApplicationVersion>0.1.5411.39163</ApplicationVersion>
+    <ApplicationRevision>26001</ApplicationRevision>
+    <ApplicationVersion>0.1.5419.26001</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -204,7 +204,7 @@
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">
       <Visible>False</Visible>
-      <ProductName>Microsoft .NET Framework 4.5 %28x86 and x64%29</ProductName>
+      <ProductName>Microsoft .NET Framework 4.5 %28x86 和 x64%29</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
