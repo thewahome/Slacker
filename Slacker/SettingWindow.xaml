@@ -26,7 +26,7 @@
 				<Label>Minutes</Label>
 			</StackPanel>
 			<DataGrid Grid.Row="1"
-				  ItemsSource="{Binding Teams.View}" 
+				  ItemsSource="{Binding Teams}" 
 				  AutoGenerateColumns="False">
 				<DataGrid.Columns>
 					<DataGridTextColumn Header="Team Name" Binding="{Binding Name, Mode=TwoWay}" />

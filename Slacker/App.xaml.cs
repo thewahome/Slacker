@@ -20,6 +20,7 @@ using Newtonsoft.Json.Linq;
 using Slacker.Config;
 using Slacker.Core;
 using Slacker.Models;
+using Slacker.Properties;
 
 namespace Slacker
 {
@@ -79,7 +80,7 @@ namespace Slacker
 
 			this.Teams.Clear();
 
-			foreach (TeamConfigElement teamConfig in Globals.Settings.Teams)
+			foreach (TeamSetting teamConfig in Settings.Default.Teams)
 			{
 				Team team = new Team()
 				{
@@ -159,7 +160,7 @@ namespace Slacker
 				this.SyncTimer = null;
 			}
 
-			this.SyncTimer = new Timer(Globals.Settings.CheckInterval * 1000);
+			this.SyncTimer = new Timer(Settings.Default.CheckInterval * 1000);
 			this.SyncTimer.Elapsed += (sender, args) =>
 			{
 				try
@@ -293,7 +294,7 @@ namespace Slacker
 			{
 				SettingWindow window = new SettingWindow()
 				{
-					DataContext = Globals.Settings
+					DataContext = Settings.Default
 				};
 
 				window.ShowDialog();
@@ -305,7 +306,7 @@ namespace Slacker
 				if (this.SyncTimer != null)
 					this.SyncTimer.Stop();
 
-				Globals.Settings.Save();
+				Settings.Default.Save();
 
 				var settingWindows = this.Windows.Cast<SettingWindow>();
 
@@ -327,8 +328,8 @@ namespace Slacker
 
 				team.MarkRead();
 
-				Globals.Settings.Teams[team.Name].Latest = team.LatestTimestamp;
-				Globals.Settings.Save();
+				Settings.Default.Teams[team.Name].Latest = team.LatestTimestamp;
+				Settings.Default.Save();
 			});
 
 		}
