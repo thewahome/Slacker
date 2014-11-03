@@ -24,10 +24,10 @@
     <UpdateInterval>7</UpdateInterval>
     <UpdateIntervalUnits>Days</UpdateIntervalUnits>
     <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
+    <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <UpdateUrl>http://wiikuo.github.io/Slacker/publish/</UpdateUrl>
-    <MinimumRequiredVersion>0.3.5421.26001</MinimumRequiredVersion>
+    <MinimumRequiredVersion>0.3.5421.11239</MinimumRequiredVersion>
     <AutorunEnabled>true</AutorunEnabled>
     <ApplicationRevision>11239</ApplicationRevision>
     <ApplicationVersion>0.3.5421.11239</ApplicationVersion>
