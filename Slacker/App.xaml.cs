@@ -288,6 +288,11 @@ namespace Slacker
 				foreach (Team team in this.Teams)
 					team.MarkRead();
 			};
+
+			Assembly assembly = Assembly.GetExecutingAssembly();
+			FileVersionInfo versionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
+
+			this.NotifyIcon.ToolTipText = string.Format("Slacker:{0}", versionInfo.FileVersion);
 		}
 
 		private void InitialCommands()

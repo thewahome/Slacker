@@ -6,7 +6,6 @@
 	<tb:TaskbarIcon x:Key="NotifyIcon"
                     IconSource="/Resources/Slack.ico"
                     ToolTipText="Slacker"
-					MenuActivation="All"
                     >
 		<tb:TaskbarIcon.ContextMenu>
 			<ContextMenu>
