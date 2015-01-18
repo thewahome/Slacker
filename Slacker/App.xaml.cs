@@ -8,6 +8,7 @@ using System.Drawing;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
@@ -71,6 +72,8 @@ namespace Slacker
 			this.InitialTeams();
 			this.InitialSync();
 			this.InitialNotifyIcon();
+
+			this.ShowChangeLog();
 		}
 
 		public void InitialTeams()
@@ -259,7 +262,7 @@ namespace Slacker
 									message += chat.Name + "\n";
 							}
 						}
-
+		
 						if (message.Length > 0)
 							this.NotifyIcon.ShowBalloonTip("Slacker", message, BalloonIcon.Info);
 					}));
@@ -279,6 +282,12 @@ namespace Slacker
 			MenuItem rootTeamMenuItem = this.NotifyIcon.ContextMenu.Items[0] as MenuItem;
 
 			rootTeamMenuItem.ItemsSource = this.Teams;
+
+			this.NotifyIcon.TrayBalloonTipClicked += (sender, args) =>
+			{
+				foreach (Team team in this.Teams)
+					team.MarkRead();
+			};
 		}
 
 		private void InitialCommands()
@@ -332,6 +341,28 @@ namespace Slacker
 				Settings.Default.Save();
 			});
 
+		}
+
+		private void ShowChangeLog()
+		{
+			Assembly assembly = Assembly.GetExecutingAssembly();
+			FileVersionInfo versionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
+
+			if (Settings.Default.VersionNumber != versionInfo.FileVersion)
+			{
+				MessageBox.Show(string.Format("您好!\n" +
+											  "Slacker 已經更新至 {0} \n"+
+											  "此次更新後，當 Slack 上有新訊息時，\n"+
+											  "您不再需要透過 Slacker 開啟您的團隊，\n"+
+											  "只需要在 Slacker 彈出的訊息泡泡點一下，就不會收到重復的通知了!",
+											  versionInfo.FileVersion),
+								"Slacker 已更新!",
+								MessageBoxButton.OK,
+								MessageBoxImage.Information);
+
+				Settings.Default.VersionNumber = versionInfo.FileVersion;
+				Settings.Default.Save();
+			}
 		}
 
 		#endregion

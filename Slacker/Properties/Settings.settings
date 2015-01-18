@@ -8,5 +8,8 @@
     <Setting Name="Teams" Type="Slacker.Config.TeamSettingCollection" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="VersionNumber" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>
