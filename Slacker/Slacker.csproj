@@ -27,10 +27,10 @@
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <UpdateUrl>http://wiikuo.github.io/slacker/publish/</UpdateUrl>
-    <MinimumRequiredVersion>0.3.5496.39113</MinimumRequiredVersion>
+    <MinimumRequiredVersion>0.3.5497.19527</MinimumRequiredVersion>
     <AutorunEnabled>true</AutorunEnabled>
-    <ApplicationRevision>39113</ApplicationRevision>
-    <ApplicationVersion>0.3.5496.39113</ApplicationVersion>
+    <ApplicationRevision>19527</ApplicationRevision>
+    <ApplicationVersion>0.3.5497.19527</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
