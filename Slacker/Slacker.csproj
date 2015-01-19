@@ -26,7 +26,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <UpdateUrl>http://wiikuo.github.io/slacker/publish/</UpdateUrl>
+    <UpdateUrl>http://wiikuo.github.io/Slacker/publish/</UpdateUrl>
     <MinimumRequiredVersion>0.3.5497.19527</MinimumRequiredVersion>
     <AutorunEnabled>true</AutorunEnabled>
     <ApplicationRevision>19527</ApplicationRevision>
